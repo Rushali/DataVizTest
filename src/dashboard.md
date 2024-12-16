@@ -7,14 +7,35 @@ toc: false
 # Brooklyn Bicycle Crashes
 
 ```js
-import {BurndownPlot} from "./components/burndownPlot.js";
+//jsonURL = "https://collectionapi.metmuseum.org/public/collection/v1/departments"
+const jsonURL = "https://data.cityofnewyork.us/resource/h9gi-nx95.json?$where=number_of_cyclist_injured%3E=1"
+
+const csvURL = "https://data.cityofnewyork.us/resource/h9gi-nx95.csv?$where=number_of_cyclist_injured%3E=1"
+
+let dataFetched = fetch(jsonURL)
+  .then(response => {
+    if (!response.ok) throw new Error(response.status);
+    return response.json();
+  });
+
+let meow = d3.json(jsonURL);
+
+fetch(csvURL)
+  .then(response => {
+    if (!response.ok) throw new Error(response.status);
+    return response.text();
+  });
+
+let bowow = d3.csv(csvURL);
+
+console.log(bowow);
 ```
 
 <!-- Load and transform the data -->
 
 ```js
 const crashes = FileAttachment("data/crashes.csv").csv({typed: true});
-console.log(crashes);
+console.log(d3.groupSort(bowow, (D) => -D.length, (d) => d.borough));
 ```
 
 <!-- A shared color scale for consistency, sorted by the number of launches -->
@@ -23,7 +44,7 @@ console.log(crashes);
 const color = Plot.scale({
   color: {
     type: "categorical",
-    domain: d3.groupSort(crashes, (D) => -D.length, (d) => d.BOROUGH),
+    domain: d3.groupSort(bowow, (D) => -D.length, (d) => d.borough),
     unknown: "var(--theme-foreground-muted)"
   }
 });
@@ -34,7 +55,7 @@ const color = Plot.scale({
 <div class="grid grid-cols-4">
   <div class="card">
     <h2>Brooklyn</h2>
-    <span class="big">${crashes.filter((d) => d.BOROUGH === "BROOKLYN").length.toLocaleString("en-US")}</span>
+    <span class="big">${bowow.filter((d) => d.borough === "BROOKLYN").length.toLocaleString("en-US")}</span>
   </div>
   <div class="card">
     <h2>Bronx</h2>
@@ -85,12 +106,12 @@ function peopleInjured(data, {width} = {}) {
 }
 ```
 
-<div class="grid grid-cols-1">
+<!-- <div class="grid grid-cols-1">
   <div class="card">
   ${resize((width) => peopleInjured(crashes, {width}))}
 
   </div>
-</div>
+</div> -->
 
 <!-- Plot of crash vehicles -->
 
@@ -123,12 +144,12 @@ function peopleDead(data, {width}) {
 }
 ```
 
-<div class="grid grid-cols-1">
+<!-- <div class="grid grid-cols-1">
   <div class="card">
     ${resize((width) => peopleDead(crashes, {width}))}
   
   </div>
-</div>
+</div> -->
 
 <!-- pedestrians deaths -->
 
@@ -161,7 +182,7 @@ function pedsDead(data, {width} = {}) {
 }
 ```
 
-<div class="grid grid-cols-1">
+<!-- <div class="grid grid-cols-1">
   <div class="card">
   ${resize((width) => pedsDead(crashes, {width}))}
 
@@ -174,6 +195,6 @@ function pedsDead(data, {width} = {}) {
     ${BurndownPlot(crashes.filter((d) => !d.BOROUGH), {x, color: {legend: true, label: "borough"}})}
 
   </div>
-</div>
+</div> -->
 
 Data: NYPD
