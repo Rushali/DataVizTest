@@ -6,6 +6,10 @@ toc: false
 
 # Brooklyn Bicycle Crashes
 
+```js
+import {BurndownPlot} from "./components/burndownPlot.js";
+```
+
 <!-- Load and transform the data -->
 
 ```js
@@ -160,6 +164,14 @@ function pedsDead(data, {width} = {}) {
 <div class="grid grid-cols-1">
   <div class="card">
   ${resize((width) => pedsDead(crashes, {width}))}
+
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h2>BURN DOWN PLOT TEST</h2>
+    ${BurndownPlot(crashes.filter((d) => !d.BOROUGH), {x, color: {legend: true, label: "borough"}})}
 
   </div>
 </div>
